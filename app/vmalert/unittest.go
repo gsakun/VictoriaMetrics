@@ -102,7 +102,7 @@ func ruleUnitTest(filename string) []error {
 		groupOrderMap[gn] = i
 	}
 
-	testGroups, err := vmalertconfig.Parse(unitTestInp.RuleFiles, nil, true)
+	testGroups, err := vmalertconfig.Parse(unitTestInp.RuleFiles, nil, true, *evaluationInterval)
 	if err != nil {
 		return []error{fmt.Errorf("failed to parse `rule_files`: %w", err)}
 	}
@@ -295,7 +295,7 @@ func (tg *testGroup) test(evalInterval time.Duration, groupOrderMap map[string]i
 	// create groups with given rule
 	var groups []*Group
 	for _, group := range testGroups {
-		ng := newGroup(group, q, *evaluationInterval, tg.ExternalLabels)
+		ng := newGroup(group, q, tg.ExternalLabels)
 		groups = append(groups, ng)
 	}
 

@@ -130,7 +130,7 @@ func main() {
 	}
 
 	if *dryRun {
-		groups, err := config.Parse(*rulePath, notifier.ValidateTemplates, true)
+		groups, err := config.Parse(*rulePath, notifier.ValidateTemplates, true, *evaluationInterval)
 		if err != nil {
 			logger.Fatalf("failed to parse %q: %s", *rulePath, err)
 		}
@@ -163,7 +163,7 @@ func main() {
 		if rw == nil {
 			logger.Fatalf("remoteWrite.url can't be empty in replay mode")
 		}
-		groupsCfg, err := config.Parse(*rulePath, validateTplFn, *validateExpressions)
+		groupsCfg, err := config.Parse(*rulePath, validateTplFn, *validateExpressions, *evaluationInterval)
 		if err != nil {
 			logger.Fatalf("cannot parse configuration file: %s", err)
 		}
@@ -185,7 +185,7 @@ func main() {
 		logger.Fatalf("failed to init: %s", err)
 	}
 	logger.Infof("reading rules configuration file from %q", strings.Join(*rulePath, ";"))
-	groupsCfg, err := config.Parse(*rulePath, validateTplFn, *validateExpressions)
+	groupsCfg, err := config.Parse(*rulePath, validateTplFn, *validateExpressions, *evaluationInterval)
 	if err != nil {
 		logger.Fatalf("cannot parse configuration file: %s", err)
 	}
@@ -369,7 +369,7 @@ func configReload(ctx context.Context, m *manager, groupsCfg []config.Group, sig
 			logger.Errorf("failed to load new templates: %s", err)
 			continue
 		}
-		newGroupsCfg, err := parseFn(*rulePath, validateTplFn, *validateExpressions)
+		newGroupsCfg, err := parseFn(*rulePath, validateTplFn, *validateExpressions, *evaluationInterval)
 		if err != nil {
 			setConfigError(err)
 			logger.Errorf("cannot parse configuration file: %s", err)
