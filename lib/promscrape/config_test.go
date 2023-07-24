@@ -167,7 +167,7 @@ func TestLoadStaticConfigs(t *testing.T) {
 }
 
 func TestLoadConfig(t *testing.T) {
-	cfg, data, err := loadConfig("testdata/prometheus.yml")
+	cfg, data, err := loadConfig("testdata/prometheus.yml", false)
 	if err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	}
@@ -178,7 +178,7 @@ func TestLoadConfig(t *testing.T) {
 		t.Fatalf("expecting non-nil data")
 	}
 
-	cfg, data, err = loadConfig("testdata/prometheus-with-scrape-config-files.yml")
+	cfg, data, err = loadConfig("testdata/prometheus-with-scrape-config-files.yml", false)
 	if err != nil {
 		t.Fatalf("unexpected error: %s", err)
 	}
@@ -190,7 +190,7 @@ func TestLoadConfig(t *testing.T) {
 	}
 
 	// Try loading non-existing file
-	cfg, data, err = loadConfig("testdata/non-existing-file")
+	cfg, data, err = loadConfig("testdata/non-existing-file", false)
 	if err == nil {
 		t.Fatalf("expecting non-nil error")
 	}
@@ -202,7 +202,7 @@ func TestLoadConfig(t *testing.T) {
 	}
 
 	// Try loading invalid file
-	cfg, data, err = loadConfig("testdata/file_sd_1.yml")
+	cfg, data, err = loadConfig("testdata/file_sd_1.yml", false)
 	if err == nil {
 		t.Fatalf("expecting non-nil error")
 	}
@@ -232,7 +232,7 @@ scrape_configs:
     - host4:1234
 `
 	var cfg Config
-	allData, err := cfg.parseData([]byte(data), "sss")
+	allData, err := cfg.parseData([]byte(data), "sss", false)
 	if err != nil {
 		t.Fatalf("cannot parase data: %s", err)
 	}
@@ -320,7 +320,7 @@ scrape_configs:
         replacement: black:9115  # The blackbox exporter's real hostname:port.%
 `
 	var cfg Config
-	allData, err := cfg.parseData([]byte(data), "sss")
+	allData, err := cfg.parseData([]byte(data), "sss", false)
 	if err != nil {
 		t.Fatalf("cannot parase data: %s", err)
 	}
@@ -355,7 +355,7 @@ scrape_configs:
   - files: [testdata/file_sd.json]
 `
 	var cfg Config
-	allData, err := cfg.parseData([]byte(data), "sss")
+	allData, err := cfg.parseData([]byte(data), "sss", false)
 	if err != nil {
 		t.Fatalf("cannot parase data: %s", err)
 	}
@@ -375,7 +375,7 @@ scrape_configs:
   - files: [testdata/file_sd_1.yml]
 `
 	var cfgNew Config
-	allData, err = cfgNew.parseData([]byte(dataNew), "sss")
+	allData, err = cfgNew.parseData([]byte(dataNew), "sss", false)
 	if err != nil {
 		t.Fatalf("cannot parse data: %s", err)
 	}
@@ -394,7 +394,7 @@ scrape_configs:
   file_sd_configs:
   - files: [testdata/prometheus.yml]
 `
-	allData, err = cfg.parseData([]byte(data), "sss")
+	allData, err = cfg.parseData([]byte(data), "sss", false)
 	if err != nil {
 		t.Fatalf("cannot parse data: %s", err)
 	}
@@ -413,7 +413,7 @@ scrape_configs:
   file_sd_configs:
   - files: [testdata/empty_target_file_sd.yml]
 `
-	allData, err = cfg.parseData([]byte(data), "sss")
+	allData, err = cfg.parseData([]byte(data), "sss", false)
 	if err != nil {
 		t.Fatalf("cannot parse data: %s", err)
 	}
@@ -428,7 +428,7 @@ scrape_configs:
 
 func getFileSDScrapeWork(data []byte, path string) ([]*ScrapeWork, error) {
 	var cfg Config
-	allData, err := cfg.parseData(data, path)
+	allData, err := cfg.parseData(data, path, false)
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse data: %w", err)
 	}
@@ -440,7 +440,7 @@ func getFileSDScrapeWork(data []byte, path string) ([]*ScrapeWork, error) {
 
 func getStaticScrapeWork(data []byte, path string) ([]*ScrapeWork, error) {
 	var cfg Config
-	allData, err := cfg.parseData(data, path)
+	allData, err := cfg.parseData(data, path, false)
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse data: %w", err)
 	}
@@ -1197,14 +1197,14 @@ scrape_configs:
 	opts := &promauth.Options{
 		Headers: []string{"My-Auth: foo-Bar"},
 	}
-	ac, err := opts.NewConfig()
+	ac, err := opts.NewConfig(false)
 	if err != nil {
 		t.Fatalf("unexpected error when creating promauth.Config: %s", err)
 	}
 	opts = &promauth.Options{
 		Headers: []string{"Foo:bar"},
 	}
-	proxyAC, err := opts.NewConfig()
+	proxyAC, err := opts.NewConfig(false)
 	if err != nil {
 		t.Fatalf("unexpected error when creating promauth.Config for proxy: %s", err)
 	}
